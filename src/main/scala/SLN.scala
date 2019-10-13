@@ -52,9 +52,11 @@ object SLN {
     ).reduceByKey(_+_)
       .filter(_._1._1.toInt >= 2017)//2017年以后的数据
       .filter(e => classWhiteList.contains(e._1._3))
+      .map(rdd => (rdd._1, 0 - rdd._2))
       .transform(rdd => {
         rdd.sortBy(e => (e._1._1, e._1._2, e._2))
       })
+      .map(rdd => (rdd._1, 0 - rdd._2))
       .map(rdd => (rdd._1._1, rdd._1._2, rdd._1._3, rdd._2))
     classHotness.saveAsTextFiles("file:///home/leo/Desktop/hahaStore/class")
 
