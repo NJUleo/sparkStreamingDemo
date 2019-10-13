@@ -46,12 +46,14 @@ object SLN {
     }
 
     //每类在每月的热度
+    val  classWhiteList : List[String] = "火锅 烧烤 日本菜 小吃快餐 江浙菜 香锅烤鱼 日韩料理 自助餐 小龙虾 中式烧烤/烤串 新疆菜 西餐 北京菜 饮品店".split(" ").toList
     val classHotness = totalSort.map(
       rdd => ((rdd._1.apply(0), rdd._1.apply(1), rdd._1.apply(3)), rdd._2)
     ).reduceByKey(_+_)
       .filter(_._1._1.toInt >= 2017)//2017年以后的数据
+      .filter(e => classWhiteList.contains(e._1._3))
       .transform(rdd => {
-        rdd.sortBy(e => (e._1._1, e._1._2))
+        rdd.sortBy(e => (e._1._1, e._1._2, e._2))
       })
       .map(rdd => (rdd._1._1, rdd._1._2, rdd._1._3, rdd._2))
     classHotness.saveAsTextFiles("file:///home/leo/Desktop/hahaStore/class")
